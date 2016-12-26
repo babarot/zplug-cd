@@ -1,0 +1,28 @@
+#autoload
+
+if ! (( $+commands[fzy] )); then
+    echo "fzy: not found" >&2
+    return 1
+fi
+
+local repo
+
+for repo in ${(uk)zplugs[@]:gs:@:}
+do
+    echo "$repo"
+done | fzy | read repo
+
+if [[ -d ${~repo} ]]; then
+    dir=${~repo}
+elif [[ -d $ZPLUG_REPOS/$repo ]]; then
+    dir="$ZPLUG_REPOS/$repo"
+fi
+
+if [[ -z $dir ]]; then
+    return 0
+fi
+
+if builtin cd "$dir"; then
+    printf "[zplug] Changed "
+    echo "${(qqq)PWD}"
+fi
